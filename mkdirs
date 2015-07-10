@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+int my_mkdirs(char *path)
+{
+        char str[256] = {0};
+        char *p = NULL;
+        int ret = 0;
+
+        if (path == NULL)
+                return -1;
+
+        strncpy(str, path, sizeof(str) - 1);
+        if ((strncmp(str, ".", sizeof(str)) == 0) || (strncmp(str, "/", sizeof(str)) == 0))
+                return 1;
+        if (access(str, 0) == 0)
+                return 1;
+
+        p = strrchr(str, '/');
+        if (p == NULL)
+        {
+                if (mkdir(path, 0777) < 0)
+                    return -2;
+        }
+        else
+        {
+                *p = '\0';
+                ret =  apx_mkdirs(str);
+                printf("str = %s\n", str);
+                if (ret >= 0)   // dir exist 
+                {
+                    if (mkdir(path, 0777) < 0)
+                        return -2;
+                }
+                else
+                    return -3;
+        }
+        return 0;
+}
+
+int main(void)
+{
+        char file[123] = "mmm/nnn/ooo/ppp";
+        int ret = my_mkdirs(file);
+        printf("ret = %d\n", ret);
+        return 0;
+}
